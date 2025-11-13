@@ -25,6 +25,12 @@
       @media (max-width: 900px) {
         .layout { display:block; }
         aside { width:100%; margin-bottom:1rem; }
+        /* Mobile text improvements */
+        body { font-weight: 500; }
+        h1, h2, h3, h4, h5, h6 { font-weight: 700; }
+        strong, .card strong { font-weight: 700; }
+        .card { font-weight: 500; }
+        p, li, div { font-weight: 500; }
       }
       /* small adjustments for lists/buttons */
       main ul { padding-left: 0; }
@@ -80,7 +86,7 @@
       .btn-danger:hover {
         background: #dc2626;
       }
-      form label { display:block; margin-bottom:0.5rem; }
+      form label { display:block; margin-bottom:0.5rem; font-weight: 600; }
       input[type="text"], input[type="email"], input[type="date"], input[type="number"], textarea { width:100%; box-sizing:border-box; }
       .small-icon{ margin-right:6px; }
       .sidebar-link{ display:block; padding:8px 6px; color:var(--accent); border-radius:6px; font-weight:bold; }
