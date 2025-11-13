@@ -1,64 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
   <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+      <div style="flex:1; min-width:250px;">
         <h2 style="margin:0">{{ activity['name'] }}</h2>
-        <div style="color:var(--muted); font-size:0.9rem">{{ activity['date'] }} • {{ activity['created_at'] }}</div>
-        <div style="margin-top:6px; font-weight:600; color:var(--accent);">Meta: {{ activity.get('goal_points') or '—' }} pontos • Cumprido: {{ completed or 0 }} ({% if percent is not none %}{{ percent }}%{% else %}—{% endif %})</div>
+        <div style="color:var(--muted); font-size:0.9rem; margin-top:4px;">{{ activity['date'] }} • {{ activity['created_at'] }}</div>
+        <div style="margin-top:8px; font-weight:600; color:var(--accent);">Meta: {{ activity.get('goal_points') or '—' }} pontos • Cumprido: {{ completed or 0 }} ({% if percent is not none %}{{ percent }}%{% else %}—{% endif %})</div>
         {% if percent is not none %}
-          <div style="margin-top:8px;">
-            <div class="progress {% if percent >= 100 %}complete{% endif %}">
+          <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
+            <div class="progress {% if percent >= 100 %}complete{% endif %}" data-tooltip="{{ completed }} de {{ activity.get('goal_points') or 0 }} pontos{% if percent >= 100 %} — Objetivo atingido!{% endif %}" style="width:180px;">
               <div class="bar" style="width:{{ percent }}%"></div>
+              {% if percent >= 100 %}<span class="badge">✓ COMPLETO</span>{% endif %}
+              <div class="label" style="color:{% if percent >=50 %}#fff{% else %}#0b1220{% endif %};">{{ percent }}%</div>
             </div>
           </div>
         {% endif %}
       </div>
-      <div class="actions">
-        <a class="btn btn-outline" href="{{ url_for('activities_edit', id=activity['id']) }}"><i class="fa fa-edit"></i> Editar</a>
+      <div class="actions" style="display:flex; flex-wrap:wrap; gap:6px; min-width:fit-content;">
+        <a class="btn btn-outline" href="{{ url_for('activities_edit', id=activity['id']) }}" title="Editar atividade"><i class="fa fa-edit"></i> Editar</a>
         <form method="post" action="{{ url_for('activities_delete', id=activity['id']) }}" style="display:inline;">
-          <button class="btn btn-danger" type="submit" onclick="return confirm('Excluir atividade?')"><i class="fa fa-trash"></i> Excluir</button>
+          <button class="btn btn-danger" type="submit" onclick="return confirm('Tem certeza que deseja excluir esta atividade?')" title="Excluir atividade"><i class="fa fa-trash"></i> Excluir</button>
         </form>
       </div>
     </div>
-    <div style="margin-top:12px">{{ activity['description'] }}</div>
+    <div style="margin-top:12px; color:#111827; line-height:1.5;">{{ activity['description'] }}</div>
   </div>
 
-  <h3>Produções relacionadas</h3>
-    <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
-      {% if percent is not none %}
-        <div style="font-size:0.95rem;">Progresso:</div>
-        <div class="progress {% if percent >= 100 %}complete{% endif %}" title="{{ completed }} / {{ activity.get('goal_points') or 0 }} pontos">
-          <div class="bar" style="width:{{ percent }}%"></div>
-          <div class="label" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:0.85rem; font-weight:700; color:{% if percent >=50 %}#fff{% else %}#0b1220{% endif %};">{{ percent }}%</div>
-        </div>
-      {% endif %}
-    </div>
+  <h3 style="margin-top:16px; margin-bottom:12px;">Produções relacionadas</h3>
 
     {% if productions %}
-    {% for p in productions %}
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <strong>{{ p['title'] }}</strong>
-            <div style="color:var(--muted); font-size:0.9rem">{{ p['created_at'] }} • Qty: {{ p['quantity'] if p['quantity'] is not none else '-' }}</div>
+      {% for p in productions %}
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div style="flex:1;">
+              <strong>{{ p['title'] }}</strong>
+              <div style="color:var(--muted); font-size:0.9rem; margin-top:4px;">{{ p['created_at'] }} • Quantidade: {{ p['quantity'] if p['quantity'] is not none else '—' }}</div>
+            </div>
+            <div class="actions">
+              <a class="btn btn-outline" href="{{ url_for('productions_edit', id=p['id']) }}" title="Editar produção"><i class="fa fa-edit"></i> Editar</a>
+            </div>
           </div>
-          <div class="actions">
-            <a class="btn btn-outline" href="{{ url_for('productions_edit', id=p['id']) }}"><i class="fa fa-edit"></i></a>
-          </div>
+          <div style="margin-top:8px; color:#111827; line-height:1.5;">{{ p['description'] }}</div>
         </div>
-        <div style="margin-top:8px">{{ p['description'] }}</div>
-      </div>
-    {% endfor %}
-  {% else %}
-    <p>Nenhuma produção vinculada a esta atividade.</p>
-  {% endif %}
-    <div style="margin-top:10px;">
-      <form method="post" action="{{ url_for('activities_mark_complete', id=activity['id']) }}" style="display:inline; margin-right:8px;">
-        <button class="btn btn-primary" type="submit">Marcar como concluída</button>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--muted); font-style:italic;">Nenhuma produção vinculada a esta atividade.</p>
+    {% endif %}
+
+    <div style="margin-top:16px; padding-top:12px; border-top:1px solid #e5e7eb; display:flex; gap:8px; flex-wrap:wrap;">
+      <form method="post" action="{{ url_for('activities_mark_complete', id=activity['id']) }}" style="display:inline;">
+        <button class="btn btn-primary" type="submit" title="Define a meta como igual ao progresso atual">✓ Marcar como concluída</button>
       </form>
       <form method="post" action="{{ url_for('activities_reset_progress', id=activity['id']) }}" style="display:inline;" id="reset-form">
-        <button class="btn btn-outline" type="button" onclick="confirmReset('{{ activity['name'] }}', {{ activity['id'] }})">Resetar progresso</button>
+        <button class="btn btn-outline" type="button" onclick="confirmReset('{{ activity['name'] }}', {{ activity['id'] }})" title="Remove todas as produções vinculadas">↻ Resetar progresso</button>
       </form>
     </div>
 

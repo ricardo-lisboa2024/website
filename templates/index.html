@@ -1,23 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>Visão Geral</h2>
-  <p>Use o menu à esquerda para registrar <strong>atividades</strong> ou <strong>produções</strong>.</p>
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:12px; margin-top:12px;">
-    <div class="card">
-      <h3 style="margin-top:0;">Atividades</h3>
-      <p style="color:var(--muted);">Gerencie eventos, ações e tarefas.</p>
-      <div style="margin-top:8px;">
-        <a class="btn btn-primary" href="{{ url_for('activities_list') }}">Ver Atividades</a>
-        <a class="btn btn-outline" href="{{ url_for('export_activities_csv') }}">CSV</a>
+  <div style="animation: fadeIn .5s ease-out;">
+    <h2>Visão Geral</h2>
+    <p style="color:var(--muted); font-size:0.95rem; line-height:1.6;">Use o menu à esquerda para registrar <strong>atividades</strong> com metas de pontos ou <strong>produções</strong> vinculadas a essas atividades. O progresso é calculado automaticamente!</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px; margin-top:16px;">
+      <div class="card">
+        <h3 style="margin-top:0; margin-bottom:8px;">📊 Atividades</h3>
+        <p style="color:var(--muted); font-size:0.9rem; line-height:1.5;">Defina metas de pontos (1-100) para suas atividades e acompanhe o progresso com produções vinculadas.</p>
+        <div style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="{{ url_for('activities_list') }}">Ver Atividades</a>
+          <a class="btn btn-outline" href="{{ url_for('export_activities_csv') }}" title="Exportar em formato CSV">CSV</a>
+        </div>
       </div>
-    </div>
-    <div class="card">
-      <h3 style="margin-top:0;">Produções</h3>
-      <p style="color:var(--muted);">Registre saídas, produções e quantidades.</p>
-      <div style="margin-top:8px;">
-        <a class="btn btn-primary" href="{{ url_for('productions_list') }}">Ver Produções</a>
-        <a class="btn btn-outline" href="{{ url_for('export_productions_csv') }}">CSV</a>
+      <div class="card">
+        <h3 style="margin-top:0; margin-bottom:8px;">📦 Produções</h3>
+        <p style="color:var(--muted); font-size:0.9rem; line-height:1.5;">Registre produções com quantidades. Cada produção é automaticamente vinculada a uma atividade.</p>
+        <div style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="{{ url_for('productions_list') }}">Ver Produções</a>
+          <a class="btn btn-outline" href="{{ url_for('export_productions_csv') }}" title="Exportar em formato CSV">CSV</a>
+        </div>
       </div>
     </div>
   </div>
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 {% endblock %}

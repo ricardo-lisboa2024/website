@@ -6,34 +6,35 @@
     <div>
       {% for a in activities %}
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-            <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:250px;">
               <strong style="font-size:1.03rem">{{ a['name'] }}</strong>
               {% if a.percent is not none %}
-                <div style="font-size:0.9rem; color:var(--accent);">Meta: {{ a.goal_points }} • {{ a.percent }}%</div>
-                <div style="margin-top:6px;">
-                  <div class="progress {% if a.percent >= 100 %}complete{% endif %}" title="{{ a.completed }} / {{ a.goal_points or 0 }} pontos">
+                <div style="font-size:0.9rem; color:var(--accent); margin-top:4px;">Meta: {{ a.goal_points }} • {{ a.percent }}%</div>
+                <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+                  <div class="progress {% if a.percent >= 100 %}complete{% endif %}" data-tooltip="{{ a.completed }} de {{ a.goal_points or 0 }} pontos{% if a.percent >= 100 %} — Meta atingida!{% endif %}">
                     <div class="bar" style="width:{{ a.percent }}%"></div>
-                    <div class="label" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:0.85rem; font-weight:700; color:{% if a.percent >=50 %}#fff{% else %}#0b1220{% endif %};">{{ a.percent }}%</div>
+                    {% if a.percent >= 100 %}<span class="badge">✓ COMPLETO</span>{% endif %}
+                    <div class="label" style="color:{% if a.percent >=50 %}#fff{% else %}#0b1220{% endif %};">{{ a.percent }}%</div>
                   </div>
                 </div>
               {% elif a.goal_points %}
-                <div style="font-size:0.9rem; color:var(--muted);">Meta: {{ a.goal_points }} • 0%</div>
-                <div style="margin-top:6px;">
-                  <div class="progress" title="0 / {{ a.goal_points or 0 }} pontos"><div class="bar" style="width:0%"></div><div class="label" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:0.85rem; font-weight:700; color:#0b1220;">0%</div></div>
+                <div style="font-size:0.9rem; color:var(--muted); margin-top:4px;">Meta: {{ a.goal_points }} • 0%</div>
+                <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+                  <div class="progress" data-tooltip="0 de {{ a.goal_points or 0 }} pontos"><div class="bar" style="width:0%"></div><div class="label" style="color:#0b1220;">0%</div></div>
                 </div>
               {% endif %}
-              <div style="color:var(--muted); font-size:0.9rem">{% if a['date'] %}{{ a['date'] }} • {% endif %}{{ a['created_at'] }}</div>
+              <div style="color:var(--muted); font-size:0.9rem; margin-top:6px;">{% if a['date'] %}{{ a['date'] }} • {% endif %}{{ a['created_at'] }}</div>
             </div>
-            <div class="actions">
-              <a class="btn btn-outline" href="{{ url_for('activities_show', id=a['id']) }}"><i class="fa fa-eye small-icon"></i> Ver</a>
-              <a class="btn btn-outline" href="{{ url_for('activities_edit', id=a['id']) }}"><i class="fa fa-edit small-icon"></i> Editar</a>
+            <div class="actions" style="display:flex; flex-wrap:wrap; gap:6px; min-width:fit-content;">
+              <a class="btn btn-outline" href="{{ url_for('activities_show', id=a['id']) }}" title="Ver detalhes"><i class="fa fa-eye small-icon"></i> Ver</a>
+              <a class="btn btn-outline" href="{{ url_for('activities_edit', id=a['id']) }}" title="Editar atividade"><i class="fa fa-edit small-icon"></i> Editar</a>
               <form method="post" action="{{ url_for('activities_delete', id=a['id']) }}" style="display:inline;">
-                <button class="btn btn-danger" type="submit" onclick="return confirm('Excluir atividade?')"><i class="fa fa-trash small-icon"></i>Excluir</button>
+                <button class="btn btn-danger" type="submit" onclick="return confirm('Tem certeza que deseja excluir esta atividade?')" title="Excluir atividade"><i class="fa fa-trash small-icon"></i>Excluir</button>
               </form>
             </div>
           </div>
-          <div style="margin-top:8px; color:#111827">{{ a['description'] }}</div>
+          <div style="margin-top:8px; color:#111827; line-height:1.5;">{{ a['description'] }}</div>
         </div>
       {% endfor %}
     </div>
