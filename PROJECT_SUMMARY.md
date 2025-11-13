@@ -181,19 +181,105 @@ curl -sS http://127.0.0.1:5000/api/productions | jq .
 
 ---
 
+## Deploy em Produção
+
+### Configuração Atual (Serviço systemd)
+O sistema está configurado para rodar automaticamente como serviço systemd:
+
+```bash
+# Verificar status
+sudo systemctl status website.service
+
+# Parar
+sudo systemctl stop website.service
+
+# Reiniciar (após editar código/templates)
+sudo systemctl restart website.service
+
+# Ver logs em tempo real
+sudo journalctl -u website.service -f
+```
+
+### Variáveis de Ambiente
+Define segurança e comportamento:
+```bash
+# Arquivo: /etc/systemd/system/website.service
+Environment="SECRET_KEY=your-production-key"
+Environment="FLASK_ENV=production"
+Environment="FLASK_DEBUG=0"
+```
+
+### Upgrade para Gunicorn + Nginx (Recomendado)
+Para melhor performance e segurança em produção:
+
+```bash
+# 1. Instalar Gunicorn
+pip install gunicorn
+
+# 2. Atualizar systemd service para usar Gunicorn
+sudo nano /etc/systemd/system/website.service
+# Mudar a linha ExecStart de:
+#   ExecStart=/path/to/app.py
+# Para:
+#   ExecStart=gunicorn --workers 4 --threads 2 --worker-class gthread --bind 127.0.0.1:5000 app:app
+
+# 3. Instalar e configurar Nginx
+sudo apt-get install nginx
+sudo nano /etc/nginx/sites-available/website
+# (proxy para 127.0.0.1:5000)
+
+# 4. Ativar site no Nginx
+sudo ln -s /etc/nginx/sites-available/website /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+
+# 5. Certificado SSL (opcional, com Let's Encrypt)
+sudo apt-get install certbot python3-certbot-nginx
+sudo certbot --nginx -d seu-dominio.com
+```
+
+### Backup Automático do Banco
+```bash
+# Script de backup (cron job)
+#!/bin/bash
+BACKUP_DIR="/home/ricardo/website/backups"
+mkdir -p $BACKUP_DIR
+sqlite3 /home/ricardo/website/data.db ".dump" > $BACKUP_DIR/data_$(date +%Y%m%d_%H%M%S).sql
+
+# Agendar (crontab -e)
+# 0 2 * * * /home/ricardo/website/backup.sh  # Backup diário às 2 AM
+```
+
+---
+
 ## Notas de Segurança
 
-- ⚠️ **Desenvolvimento**: `SECRET_KEY` é 'dev' por padrão. Defina em produção:
+- ⚠️ **SECRET_KEY**: Defina em produção
   ```bash
-  export SECRET_KEY="minha-chave-super-secreta"
+  # Gerar chave segura
+  python3 -c "import secrets; print(secrets.token_hex(32))"
+  
+  # Defina no .env ou systemd:
+  export SECRET_KEY="valor-gerado-acima"
   sudo systemctl restart website.service
   ```
 
-- ⚠️ **Servidor**: atualmente roda com `debug=False` e `host=0.0.0.0`. Para produção recomenda-se Gunicorn + Nginx com certificado SSL.
+- ⚠️ **Servidor**: atualmente roda com Flask dev server (`debug=False`, `host=0.0.0.0`).
+  - ✅ Seguro para rede local privada
+  - ❌ NÃO recomendado expor na internet pública sem Nginx + SSL
 
-- ⚠️ **Firewall**: certifique-se de que a porta 5000 está liberada (ou configure ufw):
+- ⚠️ **Firewall**: porta 5000 está aberta
   ```bash
-  sudo ufw allow 5000/tcp
+  # Verificar regras
+  sudo ufw status
+  
+  # Liberar apenas na rede local (opcional)
+  sudo ufw allow from 192.168.100.0/24 to any port 5000
+  ```
+
+- ⚠️ **Permissões**: dados sensíveis devem ter acesso restrito
+  ```bash
+  sudo chown ricardo:ricardo /home/ricardo/website/data.db
+  sudo chmod 600 /home/ricardo/website/data.db
   ```
 
 ---
@@ -240,4 +326,4 @@ Qualquer dúvida sobre uso ou customização:
 ---
 
 **Última atualização**: 13 de novembro de 2025  
-**Versão**: 1.0.0
+**Versão**: 1.1.0 (UI Improvements + Production Ready)
