@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Visão Geral</h2>
+  <p>Use o menu à esquerda para registrar <strong>atividades</strong> ou <strong>produções</strong>.</p>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:12px; margin-top:12px;">
+    <div class="card">
+      <h3 style="margin-top:0;">Atividades</h3>
+      <p style="color:var(--muted);">Gerencie eventos, ações e tarefas.</p>
+      <div style="margin-top:8px;">
+        <a class="btn btn-primary" href="{{ url_for('activities_list') }}">Ver Atividades</a>
+        <a class="btn btn-outline" href="{{ url_for('export_activities_csv') }}">CSV</a>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Produções</h3>
+      <p style="color:var(--muted);">Registre saídas, produções e quantidades.</p>
+      <div style="margin-top:8px;">
+        <a class="btn btn-primary" href="{{ url_for('productions_list') }}">Ver Produções</a>
+        <a class="btn btn-outline" href="{{ url_for('export_productions_csv') }}">CSV</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

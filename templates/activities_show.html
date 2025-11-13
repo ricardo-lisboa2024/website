@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h2 style="margin:0">{{ activity['name'] }}</h2>
+        <div style="color:var(--muted); font-size:0.9rem">{{ activity['date'] }} • {{ activity['created_at'] }}</div>
+        <div style="margin-top:6px; font-weight:600; color:var(--accent);">Meta: {{ activity.get('goal_points') or '—' }} pontos • Cumprido: {{ completed or 0 }} ({% if percent is not none %}{{ percent }}%{% else %}—{% endif %})</div>
+        {% if percent is not none %}
+          <div style="margin-top:8px;">
+            <div class="progress {% if percent >= 100 %}complete{% endif %}">
+              <div class="bar" style="width:{{ percent }}%"></div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="actions">
+        <a class="btn btn-outline" href="{{ url_for('activities_edit', id=activity['id']) }}"><i class="fa fa-edit"></i> Editar</a>
+        <form method="post" action="{{ url_for('activities_delete', id=activity['id']) }}" style="display:inline;">
+          <button class="btn btn-danger" type="submit" onclick="return confirm('Excluir atividade?')"><i class="fa fa-trash"></i> Excluir</button>
+        </form>
+      </div>
+    </div>
+    <div style="margin-top:12px">{{ activity['description'] }}</div>
+  </div>
+
+  <h3>Produções relacionadas</h3>
+    <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+      {% if percent is not none %}
+        <div style="font-size:0.95rem;">Progresso:</div>
+        <div class="progress {% if percent >= 100 %}complete{% endif %}" title="{{ completed }} / {{ activity.get('goal_points') or 0 }} pontos">
+          <div class="bar" style="width:{{ percent }}%"></div>
+          <div class="label" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:0.85rem; font-weight:700; color:{% if percent >=50 %}#fff{% else %}#0b1220{% endif %};">{{ percent }}%</div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if productions %}
+    {% for p in productions %}
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong>{{ p['title'] }}</strong>
+            <div style="color:var(--muted); font-size:0.9rem">{{ p['created_at'] }} • Qty: {{ p['quantity'] if p['quantity'] is not none else '-' }}</div>
+          </div>
+          <div class="actions">
+            <a class="btn btn-outline" href="{{ url_for('productions_edit', id=p['id']) }}"><i class="fa fa-edit"></i></a>
+          </div>
+        </div>
+        <div style="margin-top:8px">{{ p['description'] }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>Nenhuma produção vinculada a esta atividade.</p>
+  {% endif %}
+    <div style="margin-top:10px;">
+      <form method="post" action="{{ url_for('activities_mark_complete', id=activity['id']) }}" style="display:inline; margin-right:8px;">
+        <button class="btn btn-primary" type="submit">Marcar como concluída</button>
+      </form>
+      <form method="post" action="{{ url_for('activities_reset_progress', id=activity['id']) }}" style="display:inline;" id="reset-form">
+        <button class="btn btn-outline" type="button" onclick="confirmReset('{{ activity['name'] }}', {{ activity['id'] }})">Resetar progresso</button>
+      </form>
+    </div>
+
+<script>
+function confirmReset(activityName, activityId) {
+  var msg = 'Deseja resetar o progresso de "' + activityName + '"?\n\nIsso removerá TODAS as produções vinculadas a esta atividade. Esta ação não pode ser desfeita.';
+  if (confirm(msg)) {
+    document.getElementById('reset-form').submit();
+  }
+}
+</script>
+
+{% endblock %}

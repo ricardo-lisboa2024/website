@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Website - SQLite Form</title>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+     <!-- Tom Select (searchable select) - local -->
+     <link href="{{ url_for('static', filename='lib/tom-select.min.css') }}" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVn+XQ8m8Q2s3qJw5q2a2x0eVqVq8Yv1QYfQb1E1q2Q1Vn1w5c6Qe2s7W9K1q3G+0V1bQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+      /* layout container */
+      :root{
+        --accent:#2563eb;
+        --muted:#6b7280;
+        --card-bg:#ffffff;
+        --surface:#f8fafc;
+      }
+      body{ font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--surface); }
+      .layout { display:flex; gap:1rem; align-items:flex-start; max-width:1100px; margin:1.25rem auto; padding:0 1rem; }
+      aside { min-width:220px; }
+      header.site-header { background: linear-gradient(90deg, #111827, #0f172a); color: #fff; padding:12px 0; }
+      header.site-header .container { max-width:1100px; margin:0 auto; padding:0 1rem; display:flex; align-items:center; justify-content:space-between; }
+      header.site-header h1{ margin:0; font-size:1.05rem; letter-spacing:0.2px; }
+      @media (max-width: 900px) {
+        .layout { display:block; }
+        aside { width:100%; margin-bottom:1rem; }
+      }
+      /* small adjustments for lists/buttons */
+      main ul { padding-left: 0; }
+      .card { background:var(--card-bg); border-radius:8px; padding:12px; box-shadow:0 6px 18px rgba(2,6,23,0.06); margin-bottom:12px; transition:transform .14s ease, box-shadow .14s ease; }
+      .card:hover{ transform:translateY(-4px); box-shadow:0 12px 28px rgba(2,6,23,0.08); }
+      .actions a, .actions button { margin-right:8px; text-decoration:none; }
+      .btn { display:inline-block; padding:6px 10px; border-radius:6px; border:0; cursor:pointer; font-weight:600; }
+      .btn-primary{ background:var(--accent); color:#fff; }
+      .btn-outline{ background:transparent; color:var(--accent); border:1px solid rgba(37,99,235,0.12); }
+      .btn-danger{ background:#ef4444; color:#fff; }
+      form label { display:block; margin-bottom:0.5rem; }
+      input[type="text"], input[type="email"], input[type="date"], input[type="number"], textarea { width:100%; box-sizing:border-box; }
+      .small-icon{ margin-right:6px; }
+      .sidebar-link{ display:block; padding:8px 6px; color:var(--accent); border-radius:6px; font-weight:bold; }
+      .sidebar-link:hover{ background:rgba(37,99,235,0.06); }
+      /* Progress bar */
+      .progress {
+        height: 10px;
+        background: #e6eefc;
+        border-radius: 6px;
+        overflow: hidden;
+        width: 140px;
+        display:inline-block;
+        vertical-align:middle;
+      }
+      .progress > .bar {
+        height:100%;
+        background: var(--accent);
+        width:0%;
+        transition: width .3s ease;
+      }
+      .progress.complete > .bar { background: #16a34a; }
+    </style>
+  </head>
+  <body>
+      <div style="position:fixed; inset:0; z-index:-1; background-color: var(--surface);"></div>
+    <header class="site-header">
+      <div class="container">
+        <h1>Website — Gerenciador</h1>
+        <div style="color:var(--muted); font-size:0.9rem">SQLite · Flask</div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside>
+        <h2>Menu</h2>
+        <button id="menu-toggle" aria-expanded="false" aria-controls="main-nav" style="display:none;">☰ Menu</button>
+        <nav id="main-nav">
+          <ul style="list-style:none; padding:0;">
+            <li><a class="sidebar-link" href="{{ url_for('index') }}">Início</a></li>
+            <li><a class="sidebar-link" href="{{ url_for('activities_list') }}">Registrar Atividades</a></li>
+            <li><a class="sidebar-link" href="{{ url_for('productions_list') }}">Registrar Produções</a></li>
+          </ul>
+        </nav>
+        {% if activities_progress %}
+          <div style="margin-top:12px;">
+            <h3 style="margin:0 0 8px 0; font-size:0.95rem">Progresso</h3>
+            <ul style="list-style:none; padding:0; margin:0;">
+              {% for a in activities_progress %}
+                <li style="padding:6px 4px; display:flex; justify-content:space-between; align-items:center;">
+                  <a class="sidebar-link" href="{{ url_for('activities_show', id=a.id) }}" style="padding:4px 6px;">{{ a.name }}</a>
+                  <span style="font-size:0.85rem; color:var(--muted); min-width:44px; text-align:right;">{% if a.percent is not none %}{{ a.percent }}%{% else %}{% if a.goal_points %}0%{% else %}—{% endif %}{% endif %}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </aside>
+
+      <section style="flex:1;">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div style="padding:12px; background:#d4edda; border:1px solid #c3e6cb; border-radius:6px; margin-bottom:12px; color:#155724;">
+              {% for msg in messages %}
+                <div>✓ {{ msg }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <main>
+          {% block content %}{% endblock %}
+        </main>
+      </section>
+    </div>
+    <script src="{{ url_for('static', filename='lib/tom-select.complete.min.js') }}"></script>
+    <script>
+      // Toggle menu on small screens
+      (function(){
+        var btn = document.getElementById('menu-toggle');
+        var aside = document.querySelector('aside');
+        var nav = document.getElementById('main-nav');
+        if(!btn || !aside || !nav) return;
+        function updateVisibility(){
+          var small = window.matchMedia('(max-width:700px)').matches;
+          if(small){
+            btn.style.display = 'inline-block';
+            // hide nav by default on small devices unless toggled
+            if(!aside.classList.contains('nav-open')){
+              nav.style.display = 'none';
+              btn.setAttribute('aria-expanded','false');
+            }
+          } else {
+            btn.style.display = 'none';
+            nav.style.display = '';
+            aside.classList.remove('nav-open');
+            btn.setAttribute('aria-expanded','false');
+          }
+        }
+        btn.addEventListener('click', function(){
+          var open = aside.classList.toggle('nav-open');
+          nav.style.display = open ? 'block' : 'none';
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        window.addEventListener('resize', updateVisibility);
+        // initial
+        updateVisibility();
+      })();
+      // Initialize Tom Select on activity dropdowns (if present)
+      (function(){
+        try {
+          var selects = document.querySelectorAll('select[name="activity_id"].tom-select');
+          selects.forEach(function(s){
+            if (!s.tomselect) {
+              new TomSelect(s, {
+                create: false,
+                sortField: { field: "text", direction: "asc" },
+                placeholder: s.dataset.placeholder || 'Pesquisar atividade...'
+              });
+            }
+          });
+        } catch(e){
+          // ignore if Tom Select not available
+          console.warn('Tom Select init error', e);
+        }
+      })();
+
+      // Simple client-side validation for required fields and integer quantity
+      (function(){
+        function isIntValue(v){ if(v===undefined||v==='') return true; return /^\d+$/.test(v); }
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form){
+          form.addEventListener('submit', function(ev){
+            var ok = true;
+            var reqs = form.querySelectorAll('[required]');
+            reqs.forEach(function(inp){ if(!inp.value || String(inp.value).trim()==='') ok = false; });
+            // check quantity inputs
+            var qty = form.querySelector('input[name="quantity"]');
+            if(qty && !isIntValue(qty.value)) ok = false;
+            if(!ok){ ev.preventDefault(); alert('Por favor preencha os campos obrigatórios corretamente.'); }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

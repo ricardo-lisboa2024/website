@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Produções</h2>
+  <p><a href="{{ url_for('productions_add') }}">Adicionar produção</a></p>
+  {% if productions %}
+    <div>
+      {% for p in productions %}
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+            <div>
+              <strong style="font-size:1.03rem">{{ p['title'] }}</strong>
+              <div style="color:var(--muted); font-size:0.9rem">{% if p['quantity'] is not none %}Qty: {{ p['quantity'] }} • {% endif %}{{ p['created_at'] }}</div>
+            </div>
+            <div class="actions">
+              <a class="btn btn-outline" href="{{ url_for('productions_edit', id=p['id']) }}"><i class="fa fa-edit small-icon"></i></a>
+              <form method="post" action="{{ url_for('productions_delete', id=p['id']) }}" style="display:inline;">
+                <button class="btn btn-danger" type="submit" onclick="return confirm('Excluir produção?')"><i class="fa fa-trash small-icon"></i></button>
+              </form>
+            </div>
+          </div>
+          <div style="margin-top:8px; color:#111827">{{ p['description'] }}</div>
+          {% if p['activity_name'] %}
+            <div style="margin-top:6px; color:var(--muted); font-size:0.9rem">Atividade relacionada: 
+              {% if p['activity_id'] %}
+                  <a href="{{ url_for('activities_show', id=p['activity_id']) }}">{{ p['activity_name'] }}</a>
+                {% else %}
+                  {{ p['activity_name'] }}
+                {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Nenhuma produção registrada.</p>
+  {% endif %}
+{% endblock %}

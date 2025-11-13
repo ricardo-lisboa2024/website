@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Adicionar Atividade</h2>
+  <form method="post">
+    <label>Nome<br><input type="text" name="name" required></label>
+    <label>Data (opcional)<br><input type="date" name="date"></label>
+    <label>Meta (pontos)<br>
+      <select name="goal_points">
+        {% for i in range(1,101) %}
+          <option value="{{ i }}" {% if i == 100 %}selected{% endif %}>{{ i }} pontos</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Descrição<br><textarea name="description" rows="6"></textarea></label>
+    <div style="margin-top:8px;">
+      <button class="btn btn-primary" type="submit"><i class="fa fa-plus small-icon"></i> Enviar</button>
+      <a class="btn btn-outline" href="{{ url_for('activities_list') }}">Cancelar</a>
+    </div>
+  </form>
+{% endblock %}
