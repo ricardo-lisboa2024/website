@@ -27,40 +27,9 @@
       h1, h2, h3, h4, h5, h6 { color: #0a0e27; }
       .layout { display:flex; gap:1rem; align-items:flex-start; max-width:1100px; margin:1.25rem auto; padding:0 1rem; }
       aside { min-width:220px; }
-      @media (max-width: 900px) {
-        .layout { display:block; }
-        aside { width:100%; margin-bottom:1rem; }
-        /* Mobile text improvements - improve contrast */
-        body { 
-          font-weight: 500; 
-          color: #0a0e27 !important;
-        }
-        h1, h2, h3, h4, h5, h6 { 
-          font-weight: 700; 
-          color: #0a0e27 !important;
-        }
-        strong, .card strong { 
-          font-weight: 700; 
-          color: #0a0e27 !important;
-        }
-        .card { 
-          font-weight: 500; 
-          color: #0a0e27 !important;
-          background: #ffffff !important;
-        }
-        p, li, div { 
-          font-weight: 500; 
-          color: #0a0e27 !important;
-        }
-        /* Form elements */
-        input, textarea, select {
-          color: #0a0e27 !important;
-          background: #ffffff !important;
-        }
-        /* Links and muted text */
-        a { color: #2563eb !important; }
-        [style*="--muted"], .muted { color: #4b5563 !important; }
-      }
+      /* Mobile-specific styles have been removed to force desktop layout
+         across all screen sizes. This keeps the main (desktop) version
+         intact and avoids alternate mobile styling. */
       /* small adjustments for lists/buttons */
       main ul { padding-left: 0; }
       .card { 
@@ -309,7 +278,8 @@
         var nav = document.getElementById('main-nav');
         if(!btn || !aside || !nav) return;
         function updateVisibility(){
-          var small = window.matchMedia('(max-width:700px)').matches;
+          // Mobile behavior disabled: always show desktop navigation
+          var small = false;
           if(small){
             btn.style.display = 'inline-block';
             // hide nav by default on small devices unless toggled
