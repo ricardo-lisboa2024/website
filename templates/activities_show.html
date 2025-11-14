@@ -48,8 +48,8 @@
     {% endif %}
 
     <div style="margin-top:16px; padding-top:12px; border-top:1px solid #e5e7eb; display:flex; gap:8px; flex-wrap:wrap;">
-      <form method="post" action="{{ url_for('activities_mark_complete', id=activity['id']) }}" style="display:inline;">
-        <button class="btn btn-primary" type="submit" title="Define a meta como igual ao progresso atual">✓ Marcar como concluída</button>
+      <form method="post" action="{{ url_for('activities_mark_complete', id=activity['id']) }}" style="display:inline;" id="complete-form">
+        <button class="btn btn-primary" type="button" onclick="confirmComplete('{{ activity['name'] }}', {{ activity['id'] }})" title="Remove a atividade e suas produções">✓ Marcar como concluída</button>
       </form>
       <form method="post" action="{{ url_for('activities_reset_progress', id=activity['id']) }}" style="display:inline;" id="reset-form">
         <button class="btn btn-outline" type="button" onclick="confirmReset('{{ activity['name'] }}', {{ activity['id'] }})" title="Remove todas as produções vinculadas">↻ Resetar progresso</button>
@@ -57,6 +57,13 @@
     </div>
 
 <script>
+function confirmComplete(activityName, activityId) {
+  var msg = 'Deseja marcar "' + activityName + '" como concluída?\n\nIsso removerá a atividade e TODAS as suas produções do banco de dados. Esta ação não pode ser desfeita.';
+  if (confirm(msg)) {
+    document.getElementById('complete-form').submit();
+  }
+}
+
 function confirmReset(activityName, activityId) {
   var msg = 'Deseja resetar o progresso de "' + activityName + '"?\n\nIsso removerá TODAS as produções vinculadas a esta atividade. Esta ação não pode ser desfeita.';
   if (confirm(msg)) {

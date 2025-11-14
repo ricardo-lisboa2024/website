@@ -250,14 +250,23 @@ def activities_show(id):
 @app.route('/activities/<int:id>/mark_complete', methods=['POST'])
 def activities_mark_complete(id):
     db = get_db()
-    # compute completed
-    cur = db.execute('SELECT IFNULL(SUM(quantity),0) AS completed FROM productions WHERE activity_id = ?', (id,))
-    completed = cur.fetchone()['completed']
-    # set goal_points to completed (so percent == 100)
-    db.execute('UPDATE activities SET goal_points = ? WHERE id = ?', (completed, id))
+    # Get activity name for message
+    cur = db.execute('SELECT name FROM activities WHERE id = ?', (id,))
+    activity = cur.fetchone()
+    if not activity:
+        flash('Atividade não encontrada.')
+        return redirect(url_for('activities_list'))
+    
+    activity_name = activity['name']
+    
+    # Delete all productions for this activity
+    db.execute('DELETE FROM productions WHERE activity_id = ?', (id,))
+    # Delete the activity itself
+    db.execute('DELETE FROM activities WHERE id = ?', (id,))
     db.commit()
-    flash('Meta marcada como concluída (goal_points atualizado).')
-    return redirect(url_for('activities_show', id=id))
+    
+    flash(f'Atividade "{activity_name}" concluída e removida do banco, junto com suas produções.')
+    return redirect(url_for('activities_list'))
 
 
 @app.route('/activities/<int:id>/reset_progress', methods=['POST'])
