@@ -1,0 +1,39 @@
+nohup: ignorando entrada
+ * Serving Flask app 'app'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 145-603-968
+127.0.0.1 - - [13/Nov/2025 09:52:58] "GET /activities HTTP/1.1" 200 -
+/home/ricardo/website/app.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (name, date, description, datetime.utcnow().isoformat()),
+127.0.0.1 - - [13/Nov/2025 09:53:09] "[32mPOST /activities/add HTTP/1.1[0m" 302 -
+127.0.0.1 - - [13/Nov/2025 09:53:09] "GET /activities HTTP/1.1" 200 -
+/home/ricardo/website/app.py:99: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (title, q, description, datetime.utcnow().isoformat()),
+127.0.0.1 - - [13/Nov/2025 09:53:09] "[32mPOST /productions/add HTTP/1.1[0m" 302 -
+127.0.0.1 - - [13/Nov/2025 09:53:09] "GET /productions HTTP/1.1" 200 -
+ * Detected change in '/home/ricardo/website/app.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 145-603-968
+ * Detected change in '/home/ricardo/website/app.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 145-603-968
+127.0.0.1 - - [13/Nov/2025 09:57:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:57:51] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [13/Nov/2025 09:57:56] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:57:58] "GET /activities HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:58:09] "GET /productions HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:58:12] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:58:21] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:59:28] "GET /productions HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:59:30] "GET /activities HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:59:31] "GET /productions HTTP/1.1" 200 -
+127.0.0.1 - - [13/Nov/2025 09:59:33] "GET / HTTP/1.1" 200 -
+ * Detected change in '/home/ricardo/website/app.py', reloading
+ * Restarting with stat

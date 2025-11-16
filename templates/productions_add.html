@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Adicionar Produção</h2>
+  <form method="post">
+    <label>Atividade relacionada<span style="color:red;">*</span><br>
+      <select name="activity_id" class="tom-select" data-placeholder="Selecionar atividade..." required>
+        <option value=""></option>
+        {% for a in activities %}
+          <option value="{{ a['id'] }}">{{ a['name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Quantidade (opcional)<br><input type="number" name="quantity" min="0"></label>
+    <label>Descrição<br><textarea name="description" rows="6"></textarea></label>
+    <div style="margin-top:8px;">
+      <button class="btn btn-primary" type="submit"><i class="fa fa-plus small-icon"></i> Enviar</button>
+      <a class="btn btn-outline" href="{{ url_for('productions_list') }}">Cancelar</a>
+    </div>
+  </form>
+{% endblock %}

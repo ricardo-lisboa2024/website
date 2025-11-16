@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Produções</h2>
+  <p><a href="{{ url_for('productions_add') }}">Adicionar produção</a></p>
+  {% if productions %}
+    <div>
+      {% for p in productions %}
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:250px;">
+              <strong style="font-size:1.03rem">{{ p['title'] }}</strong>
+              <div style="color:var(--muted); font-size:0.9rem; margin-top:4px;">{% if p['quantity'] is not none %}Quantidade: {{ p['quantity'] }} • {% endif %}{{ p['created_at'] }}</div>
+              {% if p['activity_name'] %}
+                <div style="margin-top:6px; color:var(--accent); font-size:0.9rem;"> 
+                  <i class="fa fa-link small-icon"></i>Atividade: 
+                  {% if p['activity_id'] %}
+                      <a href="{{ url_for('activities_show', id=p['activity_id']) }}" style="color:var(--accent); text-decoration:underline;">{{ p['activity_name'] }}</a>
+                    {% else %}
+                      {{ p['activity_name'] }}
+                    {% endif %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="actions">
+              <a class="btn btn-outline" href="{{ url_for('productions_edit', id=p['id']) }}" title="Editar produção"><i class="fa fa-edit small-icon"></i> Editar</a>
+              <form method="post" action="{{ url_for('productions_delete', id=p['id']) }}" style="display:inline;">
+                <button class="btn btn-danger" type="submit" onclick="return confirm('Tem certeza que deseja excluir esta produção?')" title="Excluir produção"><i class="fa fa-trash small-icon"></i> Excluir</button>
+              </form>
+            </div>
+          </div>
+          <div style="margin-top:8px; color:#111827; line-height:1.5;">{{ p['description'] }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="color:var(--muted); font-style:italic;">Nenhuma produção registrada.</p>
+  {% endif %}
+{% endblock %}

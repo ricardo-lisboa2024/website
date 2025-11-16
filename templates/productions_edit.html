@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Editar Produção</h2>
+  <form method="post">
+    <label>Atividade relacionada<span style="color:red;">*</span><br>
+      <select name="activity_id" class="tom-select" data-placeholder="Selecionar atividade..." required>
+        <option value=""></option>
+        {% for a in activities %}
+          <option value="{{ a['id'] }}" {% if production['activity_id'] == a['id'] %}selected{% endif %}>{{ a['name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Quantidade (opcional)<br><input type="number" name="quantity" min="0" value="{{ production['quantity'] if production['quantity'] is not none else '' }}"></label>
+    <label>Descrição<br><textarea name="description" rows="6">{{ production['description'] }}</textarea></label>
+    <div style="margin-top:8px;">
+      <button class="btn btn-primary" type="submit">Salvar</button>
+      <a class="btn btn-outline" href="{{ url_for('productions_list') }}">Cancelar</a>
+    </div>
+  </form>
+{% endblock %}
