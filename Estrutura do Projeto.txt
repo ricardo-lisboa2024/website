@@ -1,0 +1,11 @@
+website/
+├── app.py                 # Aplicação Flask principal
+├── templates/
+│   └── index.html        # Template principal
+├── static/
+│   ├── css/
+│   │   └── style.css     # Estilos CSS
+│   └── js/
+│       └── script.js     # JavaScript do frontend
+├── venv/                 # Ambiente virtual (não versionado)
+└── README.md            # Este arquivo

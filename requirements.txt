@@ -1,1 +1,90 @@
 Flask>=2.0
+
+2. Instalar Dependências
+
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
+
+3. Configurar Ambiente Virtual
+
+python3 -m venv venv
+source venv/bin/activate
+pip install flask gunicorn
+
+4. Configurar como Serviço Systemd
+Criar arquivo de serviço:
+
+sudo nano /etc/systemd/system/website.service
+
+Conteúdo do arquivo de serviço:
+
+[Unit]
+Description=Personal Scheduler Website
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/home/ricardo/website
+Environment=PATH=/home/ricardo/website/venv/bin
+ExecStart=/home/ricardo/website/venv/bin/gunicorn --bind 0.0.0.0:5000 app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+⚠️ IMPORTANTE: Ajuste o WorkingDirectory e Environment=PATH para o caminho do seu projeto.
+
+5. Configurar Permissões
+
+sudo chown -R www-data:www-data /home/ricardo/website
+sudo chmod -R 755 /home/ricardo/website
+
+sudo chown -R www-data:www-data /home/ricardo/website
+sudo chmod -R 755 /home/ricardo/website
+
+6. Ativar e Iniciar o Serviço
+
+sudo systemctl daemon-reload
+sudo systemctl enable website.service
+sudo systemctl start website.service
+
+7. Verificar Status
+
+sudo systemctl status website.service
+
+🚀 Comandos de Gerenciamento
+Reiniciar o serviço (após atualizações):
+
+sudo systemctl restart website.service
+
+Parar o serviço:
+
+sudo systemctl stop website.service
+
+Ver logs em tempo real:
+
+sudo journalctl -u website.service -f
+
+Recarregar configuração do serviço:
+
+sudo systemctl daemon-reload
+
+🌐 Acesso
+
+O site estará disponível em:
+
+http://seu-servidor:5000
+
+Ou se configurado com proxy reverso:
+
+http://seu-dominio.com
+
+
+
+
+
+
+

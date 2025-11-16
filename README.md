@@ -1,49 +1,34 @@
-# Website simples com Flask + SQLite
+# 📅 Personal Scheduler
 
-Projeto mínimo que permite inserir informações através de um formulário e armazená-las em um banco SQLite.
+Um sistema de gerenciamento de atividades pessoais desenvolvido em Flask, com interface web moderna e organização por prioridades.
 
-Requisitos
+## ✨ Funcionalidades
+
+- ✅ **Categorias de atividades**: Projetos, Livros e Cursos
+- 🎯 **Sistema de prioridades**: Urgente, Alta, Média, Baixa e Não Prioritário
+- 📊 **Controle de progresso**: Percentual de conclusão com barras visuais
+- 📅 **Datas de conclusão**: Organização por prazos
+- 🏷️ **Filtros inteligentes**: Por categoria e status
+- 📱 **Design responsivo**: Funciona em desktop e mobile
+- 🎨 **Interface moderna**: Cores por prioridade e visual intuitivo
+
+## 🛠️ Tecnologias
+
+- **Backend**: Python Flask
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Banco de Dados**: SQLite
+- **Servidor**: Gunicorn (produção)
+- **Sistema**: Service systemd (Debian/Ubuntu)
+
+## 📥 Instalação
+
+### Pré-requisitos
+- Debian/Ubuntu Linux
 - Python 3.8+
+- pip3
+- git
 
-Instalação rápida
-
+### 1. Clonar o Repositório
 ```bash
-cd /home/user/website
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-Inicializar o banco de dados (opcional — o app cria automaticamente se não existir):
-
-```bash
-python3 -c "from app import init_db; init_db()"
-```
-
-Executar o servidor
-
-```bash
-python3 app.py
-```
-
-Acesse em `http://127.0.0.1:5000/` e use o menu para registrar atividades e produções.
-
-Novas rotas úteis:
-
-- Lista de atividades (HTML): `GET /activities`
-- Formulário de adicionar atividade: `GET /activities/add` / `POST /activities/add`
-- Editar atividade: `GET /activities/<id>/edit` / `POST /activities/<id>/edit`
-- Excluir atividade: `POST /activities/<id>/delete`
-- Export CSV de atividades: `GET /export/activities.csv`
-- API JSON de atividades: `GET /api/activities`
-
-- Lista de produções (HTML): `GET /productions`
-- Formulário de adicionar produção: `GET /productions/add` / `POST /productions/add`
-- Editar produção: `GET /productions/<id>/edit` / `POST /productions/<id>/edit`
-- Excluir produção: `POST /productions/<id>/delete`
-- Export CSV de produções: `GET /export/productions.csv`
-- API JSON de produções: `GET /api/productions`
-
-Notas
-- Em produção, defina `SECRET_KEY` de forma segura.
-- O arquivo do banco é `data.db` no diretório do projeto.
+git clone https://github.com/ricardo-lisboa2024/website.git
+cd website

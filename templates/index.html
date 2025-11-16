@@ -1,37 +1,144 @@
-{% extends "base.html" %}
-{% block content %}
-  <div style="animation: fadeIn .5s ease-out;">
-    <h2>Visão Geral</h2>
-    <p style="color:var(--muted); font-size:0.95rem; line-height:1.6;">Use o menu à esquerda para registrar <strong>atividades</strong> com metas de pontos ou <strong>produções</strong> vinculadas a essas atividades. O progresso é calculado automaticamente!</p>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px; margin-top:16px;">
-      <div class="card">
-        <h3 style="margin-top:0; margin-bottom:8px;">📊 Atividades</h3>
-        <p style="color:var(--muted); font-size:0.9rem; line-height:1.5;">Defina metas de pontos (1-100) para suas atividades e acompanhe o progresso com produções vinculadas.</p>
-        <div style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">
-          <a class="btn btn-primary" href="{{ url_for('activities_list') }}">Ver Atividades</a>
-          <a class="btn btn-outline" href="{{ url_for('export_activities_csv') }}" title="Exportar em formato CSV">CSV</a>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tasks"></i> Personal Scheduler</h1>
+            <p>Organize suas atividades por prioridade</p>
+        </header>
+
+        <!-- Menu de Adicionar Atividade com Submenus -->
+        <div class="add-activity-menu">
+            <button class="menu-btn" onclick="toggleSubmenu()">
+                <i class="fas fa-plus"></i> Adicionar Atividade
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="submenu" id="submenu">
+                <button onclick="showActivityForm('projeto')">
+                    <i class="fas fa-project-diagram"></i> Projeto
+                </button>
+                <button onclick="showActivityForm('livro')">
+                    <i class="fas fa-book"></i> Livro
+                </button>
+                <button onclick="showActivityForm('curso')">
+                    <i class="fas fa-graduation-cap"></i> Curso
+                </button>
+            </div>
         </div>
-      </div>
-      <div class="card">
-        <h3 style="margin-top:0; margin-bottom:8px;">📦 Produções</h3>
-        <p style="color:var(--muted); font-size:0.9rem; line-height:1.5;">Registre produções com quantidades. Cada produção é automaticamente vinculada a uma atividade.</p>
-        <div style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">
-          <a class="btn btn-primary" href="{{ url_for('productions_list') }}">Ver Produções</a>
-          <a class="btn btn-outline" href="{{ url_for('export_productions_csv') }}" title="Exportar em formato CSV">CSV</a>
+
+        <!-- Formulário de Adicionar Atividade -->
+        <div class="activity-form" id="activityForm">
+            <h3 id="formTitle">Adicionar Nova Atividade</h3>
+            <form id="addActivityForm" onsubmit="addActivity(event)">
+                <input type="hidden" id="activityType" name="type">
+                
+                <div class="form-group">
+                    <label for="title">Título:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrição:</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="completion_date">Data de Conclusão:</label>
+                        <input type="date" id="completion_date" name="completion_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority">Prioridade:</label>
+                        <select id="priority" name="priority" required>
+                            <option value="">Selecione...</option>
+                            <option value="urgente">🔴 Urgente</option>
+                            <option value="alta">🟠 Alta</option>
+                            <option value="media">🟡 Média</option>
+                            <option value="baixa">🟢 Baixa</option>
+                            <option value="nao-prioritario">⚫ Não Prioritário</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="percentage">Progresso (%):</label>
+                    <input type="range" id="percentage" name="percentage" min="0" max="100" value="0">
+                    <span id="percentageValue">0%</span>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Salvar Atividade
+                    </button>
+                    <button type="button" onclick="hideActivityForm()" class="btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </form>
         </div>
-      </div>
+
+        <!-- Filtros e Estatísticas -->
+        <div class="filters-stats">
+            <div class="stats">
+                <div class="stat-card">
+                    <h4>Ativas</h4>
+                    <span id="activeCount">0</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Concluídas</h4>
+                    <span id="completedCount">0</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Urgentes</h4>
+                    <span id="urgentCount">0</span>
+                </div>
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterActivities('all')">Todas</button>
+                <button class="filter-btn" onclick="filterActivities('projeto')">Projetos</button>
+                <button class="filter-btn" onclick="filterActivities('livro')">Livros</button>
+                <button class="filter-btn" onclick="filterActivities('curso')">Cursos</button>
+            </div>
+        </div>
+
+        <!-- Lista de Atividades Pendentes -->
+        <section class="activities-section">
+            <h2><i class="fas fa-clock"></i> Atividades Pendentes</h2>
+            <div class="activities-list" id="pendingActivities">
+                <!-- Atividades serão inseridas aqui via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Lista de Atividades Concluídas -->
+        <section class="activities-section completed-section">
+            <h2><i class="fas fa-check-circle"></i> Atividades Concluídas</h2>
+            <div class="activities-list" id="completedActivities">
+                <!-- Atividades concluídas serão inseridas aqui -->
+            </div>
+        </section>
     </div>
-  </div>
-  <style>
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
-{% endblock %}
+
+    <!-- Modal de Confirmação -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Confirmar Ação</h3>
+            <p id="modalMessage">Tem certeza que deseja realizar esta ação?</p>
+            <div class="modal-buttons">
+                <button id="confirmBtn" class="btn-danger">Confirmar</button>
+                <button onclick="closeModal()" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
